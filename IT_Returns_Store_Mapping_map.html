@@ -94,13 +94,17 @@ storesLayer.addTo(map);
 const partnerLayers = [];
 partnerConfig.forEach((p, i) => {
     const layer = L.layerGroup();
+    const angle = (2 * Math.PI * i) / partnerConfig.length;
+    const offset = 0.003; // slight offset in degrees (~300m)
     geojson.features.forEach(f => {
         const coords = f.geometry.coordinates;
         const val = f.properties[p.field] || 0;
         if (val === 0) return;
         const label = f.properties[labelField] || '';
         const radius = Math.max(2, (val / maxStores) * 5);
-        const circle = L.circleMarker([coords[1], coords[0]], {
+        const lat = coords[1] + offset * Math.sin(angle);
+        const lng = coords[0] + offset * Math.cos(angle);
+        const circle = L.circleMarker([lat, lng], {
             radius: radius,
             fillColor: p.color,
             fillOpacity: 0.7,
