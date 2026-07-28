@@ -19,16 +19,6 @@ Each map includes:
 - **Total Store Count** - red-orange circles, max radius 1/10th of units
 - **Partner stores** - individual toggleable layers per partner, auto-detected from the GeoJSON properties
 
-## How to Update
-
-1. Regenerate the GeoJSON from your Python notebook
-2. Run: `python "C:\Users\amlash\Downloads\map_generator\generate_map.py"`
-3. Pick the marketplace GeoJSON file
-4. Copy the generated HTML to `C:\Users\amlash\Downloads\coverage-maps\`
-5. Open GitHub Desktop, commit, and push
-
-Maps auto-deploy in ~1 minute.
-
 ## Tech Stack
 
 - Leaflet.js for map rendering
