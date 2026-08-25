@@ -1,0 +1,141 @@
+"""
+Build Dashboard: Wraps raw map HTML from CloudFront into the formatted dashboard template.
+Input: us_map_raw.html (raw Folium map downloaded from CloudFront)
+Output: US_Returns_Store_Mapping_map.html (formatted with header, info panel, styling)
+"""
+
+import os
+
+# Paths
+script_dir = os.path.dirname(os.path.abspath(__file__))
+raw_map_path = os.path.join(script_dir, "us_map_raw.html")
+output_path = os.path.join(script_dir, "US_Returns_Store_Mapping_map.html")
+
+# Read the raw map HTML
+with open(raw_map_path, "r", encoding="utf-8") as f:
+    map_content = f.read()
+
+# Dashboard template - wraps the map with header, layout, and info panel
+header = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WWRR Coverage Maps Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f7fa; color: #333; }
+        .airwolf-header { position: relative; background: #0a1628; padding: 40px; overflow: hidden; text-align: center; }
+        .airwolf-header-stripe-shine { position: absolute; top: 0; height: 100%; width: 60px; transform: skewX(-20deg); }
+        .airwolf-header-stripe-shine.one { left: -5%; background: linear-gradient(180deg, #1a5bb5 0%, #2d7be6 50%, #1a5bb5 100%); opacity: 0.9; width: 80px; }
+        .airwolf-header-stripe-shine.two { right: 10%; background: linear-gradient(180deg, #1a5bb5 0%, #3388ff 50%, #1a5bb5 100%); opacity: 0.8; width: 50px; }
+        .airwolf-header-stripe-fade { position: absolute; top: 0; height: 100%; transform: skewX(-20deg); }
+        .airwolf-header-stripe-fade.one { left: 5%; width: 120px; background: linear-gradient(180deg, #2563a8 0%, #3b82d4 50%, #2563a8 100%); opacity: 0.7; }
+        .airwolf-header-stripe-fade.two { left: 15%; width: 40px; background: #1e3a5f; opacity: 0.8; }
+        .airwolf-header-stripe-fade.three { right: 5%; width: 100px; background: linear-gradient(180deg, #1a5bb5 0%, #4a9fff 50%, #1a5bb5 100%); opacity: 0.85; }
+        .airwolf-header-stripe-fade.four { left: 25%; width: 30px; background: #3b82d4; opacity: 0.5; }
+        .airwolf-header-stripe-fade.five { right: 20%; width: 60px; background: linear-gradient(180deg, #2563a8 0%, #1a5bb5 100%); opacity: 0.6; }
+        .airwolf-header-title { position: relative; color: #fff; font-size: 32px; font-weight: 700; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .airwolf-header-subtitle { position: relative; color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 8px; z-index: 1; }
+        .airwolf-header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #00a8a8, #00c8c8, #00a8a8); }
+        .container { max-width: 1600px; margin: 30px auto; padding: 0 20px; }
+        .content-layout { display: flex; gap: 24px; align-items: flex-start; }
+        .map-section { background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e0e6ed; flex: 1; min-width: 0; }
+        .map-section-header { padding: 16px 24px; border-bottom: 1px solid #e8ecf0; display: flex; align-items: center; justify-content: space-between; background: #fafbfc; }
+        .map-section-header h2 { font-size: 18px; font-weight: 600; color: #0f1b2d; }
+        .map-section-header .badge { background: #e1f5fe; color: #0277bd; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .map-container { width: 100%; min-height: 700px; }
+        .info-panel { width: 340px; flex-shrink: 0; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e0e6ed; overflow: hidden; }
+        .info-panel-header { padding: 16px 20px; background: #0f1b2d; color: white; }
+        .info-panel-header h3 { font-size: 15px; font-weight: 600; }
+        .info-panel-body { padding: 20px; }
+        .info-section { margin-bottom: 20px; }
+        .info-section:last-child { margin-bottom: 0; }
+        .info-section h4 { font-size: 13px; font-weight: 600; color: #0f1b2d; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid #00a8e1; }
+        .info-section p { font-size: 13px; line-height: 1.6; color: #4a5568; margin-bottom: 8px; }
+        .definition-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .definition-table tr { border-bottom: 1px solid #f0f2f5; }
+        .definition-table td { padding: 8px 4px; vertical-align: top; }
+        .definition-table .term { font-weight: 600; color: #1a2b45; width: 35%; }
+        .definition-table .desc { color: #4a5568; line-height: 1.5; }
+        .usage-list { list-style: none; padding: 0; }
+        .usage-list li { font-size: 13px; color: #4a5568; padding: 6px 0 6px 16px; position: relative; line-height: 1.5; }
+        .usage-list li::before { content: "\\203A"; position: absolute; left: 0; color: #00a8e1; font-weight: bold; font-size: 16px; }
+        footer { text-align: center; padding: 20px; color: #666; font-size: 12px; border-top: 1px solid #e0e6ed; margin-top: 20px; }
+        @media (max-width: 1100px) { .content-layout { flex-direction: column; } .info-panel { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="airwolf-header">
+        <span class="airwolf-header-stripe-shine one"></span>
+        <span class="airwolf-header-stripe-shine two"></span>
+        <span class="airwolf-header-stripe-fade one"></span>
+        <span class="airwolf-header-stripe-fade two"></span>
+        <span class="airwolf-header-stripe-fade three"></span>
+        <span class="airwolf-header-stripe-fade four"></span>
+        <span class="airwolf-header-stripe-fade five"></span>
+        <span class="airwolf-header-title">Partnerships Analytics Team</span>
+        <div class="airwolf-header-subtitle">WWRR Coverage Maps Dashboard</div>
+    </div>
+    <div class="container">
+        <div class="content-layout">
+            <div class="map-section">
+                <div class="map-section-header">
+                    <h2>US Returns Store Mapping</h2>
+                    <span class="badge">Interactive Map</span>
+                </div>
+                <div class="map-container">
+"""
+
+footer = """
+                </div>
+            </div>
+            <div class="info-panel">
+                <div class="info-panel-header"><h3>Guide & Definitions</h3></div>
+                <div class="info-panel-body">
+                    <div class="info-section">
+                        <h4>How to Use</h4>
+                        <ul class="usage-list">
+                            <li>Click and drag to pan the map</li>
+                            <li>Scroll to zoom in/out</li>
+                            <li>Click on markers to view store details</li>
+                            <li>Use layer controls to toggle coverage areas</li>
+                            <li>Hover over regions for demand data</li>
+                        </ul>
+                    </div>
+                    <div class="info-section">
+                        <h4>Definitions</h4>
+                        <table class="definition-table">
+                            <tr><td class="term">Coverage</td><td class="desc">Customer return volume within specified distance of a partner store</td></tr>
+                            <tr><td class="term">1P Partners</td><td class="desc">First-party retail partners (Amazon-owned locations)</td></tr>
+                            <tr><td class="term">3P Partners</td><td class="desc">Third-party retail partners (e.g., Kohl's, Staples)</td></tr>
+                            <tr><td class="term">Demand Units</td><td class="desc">Total returned units for the analysis period</td></tr>
+                            <tr><td class="term">Store Mapping</td><td class="desc">Geographic assignment of customer zip codes to nearest partner stores</td></tr>
+                        </table>
+                    </div>
+                    <div class="info-section">
+                        <h4>About</h4>
+                        <p>This map visualizes the geographic coverage of our returns partner network.</p>
+                        <p>Data updates automatically from the coverage pipeline.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer><p>Partnerships Analytics Team &bull; WWRR Coverage Maps</p></footer>
+</body>
+</html>
+"""
+
+# Combine: header + raw map + footer
+final_html = header + map_content + footer
+
+# Write the output
+with open(output_path, "w", encoding="utf-8") as f:
+    f.write(final_html)
+
+print(f"✅ Dashboard built successfully!")
+print(f"   Input:  {raw_map_path}")
+print(f"   Output: {output_path}")
+print(f"   Size:   {os.path.getsize(output_path) / (1024*1024):.1f} MB")
+print(f"\nNext: Push US_Returns_Store_Mapping_map.html to GitHub")
