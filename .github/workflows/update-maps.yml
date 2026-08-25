@@ -21,7 +21,7 @@ jobs:
 
       - name: Build dashboard page
         run: |
-          cat > US_Returns_Store_Mapping_map.html.html << 'HEADER'
+          cat > US_Returns_Store_Mapping_map.html << 'HEADER'
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -94,9 +94,9 @@ jobs:
           HEADER
 
           # Insert the map HTML content
-          cat map_content.html >> US_Returns_Store_Mapping_map.html.html
+          cat map_content.html >> US_Returns_Store_Mapping_map.html
 
-          cat >> US_Returns_Store_Mapping_map.html.html << 'FOOTER'
+          cat >> US_Returns_Store_Mapping_map.html << 'FOOTER'
                           </div>
                       </div>
                       <div class="info-panel">
@@ -143,5 +143,5 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add US_Returns_Store_Mapping_map.html.html
+          git add US_Returns_Store_Mapping_map.html
           git diff --cached --quiet || (git commit -m "Auto-update coverage map $(date +%Y-%m-%d)" && git push)
