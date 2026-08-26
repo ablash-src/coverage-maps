@@ -36,7 +36,7 @@ jobs:
               <title>WWRR Coverage Maps Dashboard</title>
               <style>
                   * { margin: 0; padding: 0; box-sizing: border-box; }
-                  body { font-family: -apple-system, BlinkMacSystemFont, serif; background-color: #f5f7fa; color: #333; }
+                  body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; background-color: #f5f7fa; color: #333; }
                   .airwolf-header { position: relative; background: #0a1628; padding: 40px; overflow: hidden; text-align: center; }
                   .airwolf-header-stripe-shine { position: absolute; top: 0; height: 100%; width: 60px; transform: skewX(-20deg); }
                   .airwolf-header-stripe-shine.one { left: -5%; background: linear-gradient(180deg, #1a5bb5 0%, #2d7be6 50%, #1a5bb5 100%); opacity: 0.9; width: 80px; }
