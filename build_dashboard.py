@@ -74,7 +74,7 @@ header = """<!DOCTYPE html>
 footer = """
             </div>
             <div class="nav-links">
-                <a href="us_map_raw.html" target="_blank">Open Full Screen &#8599;</a>
+                <a href="https://d228vtr56drz7v.cloudfront.net/wwrr-coverage/US/Output%20Files/Geodata/US_Returns_Store_Mapping_map.html" target="_blank">Open Full Screen &#8599;</a>
             </div>
         </div>
     </div>
