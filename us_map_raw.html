@@ -52,10 +52,11 @@
         const partnerConfig = [{"field": "AAFES", "color": "#FF6B35"}, {"field": "FedEx-Stores", "color": "#FFC857"}, {"field": "GiantEagle", "color": "#A855F7"}, {"field": "Goodwill", "color": "#F472B6"}, {"field": "Kohls", "color": "#84CC16"}, {"field": "LOCKER+", "color": "#FB923C"}, {"field": "Michaels", "color": "#E11D48"}, {"field": "RAC", "color": "#FACC15"}, {"field": "SaveMart", "color": "#D946EF"}, {"field": "Sheetz", "color": "#F97316"}, {"field": "Staples", "color": "#FF6B35"}, {"field": "UPS", "color": "#FFC857"}, {"field": "USHubDelivery", "color": "#A855F7"}, {"field": "WFM", "color": "#F472B6"}, {"field": "Winn-dixie", "color": "#84CC16"}];
         const boundsData = {"center_lat": 38.4503690135123, "center_lon": -89.78742830351321, "min_lat": 28.768852, "max_lat": 46.293574, "min_lon": -121.345314, "max_lon": -71.9463};
         
-        // 🗺️ IMPROVEMENT 1: Use marketplace-centered map
+        // 🗺️ IMPROVEMENT 1: Use marketplace-centered map with Carto Maps API
         const map = L.map('map', {attributionControl: false}).setView([boundsData.center_lat, boundsData.center_lon], 6);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19
+        L.tileLayer('https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_2968_1_47234f4b433346d25d155d30', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         }).addTo(map);
         
         let maxUnits = 0, maxStores = 0;
